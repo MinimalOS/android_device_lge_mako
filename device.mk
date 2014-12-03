@@ -29,6 +29,7 @@ PRODUCT_AAPT_CONFIG := normal hdpi xhdpi
 PRODUCT_AAPT_PREF_CONFIG := xhdpi
 
 PRODUCT_PACKAGES := \
+	lights.mako \
     libwpa_client \
     hostapd \
     dhcpcd.conf \
@@ -36,23 +37,14 @@ PRODUCT_PACKAGES := \
     wpa_supplicant.conf
 
 PRODUCT_PACKAGES += \
-	lights.msm8960
-
-PRODUCT_PACKAGES += \
     charger_res_images
 
-ifeq ($(TARGET_PREBUILT_KERNEL),)
-ifeq ($(USE_SVELTE_KERNEL),true)
-LOCAL_KERNEL := device/lge/mako_svelte-kernel/kernel
-else
-LOCAL_KERNEL := device/lge/mako-kernel/kernel
-endif
-else
-LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
-endif
-
-PRODUCT_COPY_FILES := \
-	$(LOCAL_KERNEL):kernel
+# Live Wallpapers
+PRODUCT_PACKAGES += \
+        LiveWallpapers \
+        LiveWallpapersPicker \
+        VisualizationWallpapers \
+        librs_jni
 
 PRODUCT_COPY_FILES += \
 	device/lge/mako/WCNSS_cfg.dat:system/vendor/firmware/wlan/prima/WCNSS_cfg.dat \
@@ -244,6 +236,7 @@ PRODUCT_PACKAGES += \
 	keystore.msm8960
 
 PRODUCT_PACKAGES += \
+	hostapd_default.conf \
 	wpa_supplicant_overlay.conf \
 	p2p_supplicant_overlay.conf
 
@@ -279,5 +272,22 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 	persist.sys.usb.config=mtp
 
+# Hardware codecs
+PRODUCT_PROPERTY_OVERRIDES += \
+    qcom.hw.aac.encoder=true
+
+PRODUCT_PACKAGES += \
+    libOmxAacEnc \
+    libOmxAmrEnc \
+    libOmxEvrcEnc \
+    libOmxQcelp13Enc
+
+# QRNGD
+PRODUCT_PACKAGES += qrngd
+
 $(call inherit-product, frameworks/native/build/phone-xhdpi-2048-dalvik-heap.mk)
+
+# This is the mako-specific audio package
+$(call inherit-product, frameworks/base/data/sounds/AudioPackage10.mk)
+
 $(call inherit-product, hardware/qcom/msm8960/msm8960.mk)
